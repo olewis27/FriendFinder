@@ -33,35 +33,26 @@ module.exports = function(app){
 	app.post('/api/friends', function(req, res){
 
     var userData = req.body;
-    var userName = friendsData.name;
-    var userPhoto = friendsData.photo;
-    var userScore = friendsData.score;
+		var totalDifference = 0;
+		var allDifferences = [];
 
+	//Loop through all of the stored friends (minus one because the last stored friend is the current user)
+	for (var i=0; i<(friends.length-1); i++){
 
-		// Note the code here. Our "server" will respond to requests and let users know if they have a table or not.
-		// It will do this by sending out the value "true" have a table
-		if(FriendsApi.length < 5 ){
-			tableData.push(req.body);
-			res.json(true); // KEY LINE
+		//Loop through all of question values and sum total their subtracted absolute values
+		for (var j=0; j<10; j++){
+			totalDifference += Math.abs(friends[i].scores[j] - newFriend.scores[j]);
 		}
 
-		// Or false if they don't have a table
-		else{
-			waitListData.push(req.body);
-			res.json(false); // KEY LINE
-		}
+		allDifferences.push(totalDifference);
+		totalDifference = 0;
+	}
+
+	//Give the smallest value in the array
+	var bestMatch = friends[allDifferences.indexOf(Math.min.apply(null, allDifferences))];
+
+	res.send(bestMatch);
+
 
 	});
-
-	// ---------------------------------------------------------------------------
-	// I added this below code so you could clear out the table while working with the functionality.
-	// Don't worry about it!
-
-	app.post('/api/clear', function(req, res){
-		// Empty out the arrays of data
-		tableData = [];
-		waitListData = [];
-
-		console.log(tableData);
-	})
 }
